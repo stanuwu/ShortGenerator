@@ -92,7 +92,7 @@ namespace ShortGenerator.Video
                 // Post Content
                 audio.AddBreak(160);
                 int nextPostStart = audio.Length;
-                var textSentences = Regex.Split(redditAnswer.Text, "\\.|!|\\?|\\n").Where(t => !string.IsNullOrEmpty(t) && t.Length > 1);
+                var textSentences = Regex.Split(redditAnswer.Text.Replace("\n", " "), "\\.|!|\\?\\s").Where(t => !string.IsNullOrEmpty(t) && t.Length > 1);
                 string accumulator = "";
                 foreach (var textSentence in textSentences)
                 {
@@ -148,8 +148,6 @@ namespace ShortGenerator.Video
                         video.OutlineText(titleText, Style.FontFamily, FontStyle.Regular, tLineSize, video.Width / 2, startX - totalHeight - tLineSize - tStartX, Color.White, 2, Color.Black, nextContentStart, audio.Length);
                         tStartX -= tLineHeight;
                     }
-
-                    if (done) break;
                 }
 
                 // Add Poster
@@ -160,10 +158,13 @@ namespace ShortGenerator.Video
                 
                 if (debug) Console.WriteLine($"Added Post {i} in {stopwatch.ElapsedMilliseconds}ms");
                 stopwatch.Restart();
+                
+                if (done) break;
             }
 
             string tVid = "./video/temp/temp.mp4";
             string tAud = "./video/temp/temp.mp3";
+            string tAud2 = "./video/temp/temp2.mp3";
             string outVid = "./video/out/out.mp4";
             
             video.WriteToFile(tVid);
@@ -174,18 +175,39 @@ namespace ShortGenerator.Video
             if (debug) Console.WriteLine($"Wrote Audio in {stopwatch.ElapsedMilliseconds}ms");
             stopwatch.Restart();
             
-            Utils.MergeVideoAudio(tVid, tAud, outVid);
+            Utils.MergeAudioAudio(tAud, inputData.Music, tAud2);
+            if (debug) Console.WriteLine($"Merged Audio Tracks in {stopwatch.ElapsedMilliseconds}ms");
+            stopwatch.Restart();
+            
+            Utils.MergeVideoAudio(tVid, tAud2, outVid);
             if (debug) Console.WriteLine($"Merged Files in {stopwatch.ElapsedMilliseconds}ms");
             stopwatch.Restart();
             
             File.Delete(tVid);
             File.Delete(tAud);
+            File.Delete(tAud2);
             if (debug) Console.WriteLine($"Clean Up in {stopwatch.ElapsedMilliseconds}ms");
             stopwatch.Restart();
             
             if (debug) Console.WriteLine("DONE!");
-
-            return null;
+            
+            // Rename Video
+            string videoName = "funny reddit post shorts content best reddit posts.mp4";
+            string videoPath = outVid.Replace("out.mp4", videoName);
+            File.Move(outVid, videoPath, true);
+            
+            // Generate Video Meta
+            var random = Utils.TimedRandom();
+            string title = $"r/{post.Subreddit} Best Posts {random.Next(0, 1000)} | Reddit Posts #fyp #reddit #shorts";
+            string musicLink = inputData.Music.Split("/").Last().Split(".").First();
+            List<string> creditNames = new List<string>();
+            creditNames.Add($"u/{post.Poster}");
+            creditNames.AddRange(post.Answers.Select(a => $"u/{a.Poster}"));
+            string credits = String.Join(", ", creditNames);
+            string description = $"{title}\n{post.Title}\nHigh quality reddit short content. Please like and subscribe!\nMusic: https://www.youtube.com/watch?v={musicLink}\nCredits: {credits}";
+            string[] tags = new[] { post.Subreddit, "fyp", "for you page", "shorts", "short", "reddit", "reddit posts", "reddit tts", "funny reddit", "reddit drama", "reddit answers", "reddit tiktok", "tts reddit", "best reddit posts", "top reddit posts", "peak reddit", "brainrot reddit", "rizz", "skibidi", "ohio", "sigma" }; // tba
+            UploadFlags flags = UploadFlags.None;
+            return new VideoData(title, description, flags, inputData.Category, videoPath, tags);
         }
     }
 }

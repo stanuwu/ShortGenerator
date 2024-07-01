@@ -1,10 +1,10 @@
 ﻿namespace ShortGenerator.Video
 {
-    public enum VideoCategory
+    public enum VideoCategory : int
     {
-        Gaming,
-        Education,
-        Comedy,
-        Entertainment
+        Gaming = 20,
+        Education = 27,
+        Comedy = 23,
+        Entertainment = 24
     }
 }

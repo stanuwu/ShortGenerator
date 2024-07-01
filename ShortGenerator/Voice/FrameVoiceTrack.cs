@@ -17,7 +17,7 @@ namespace ShortGenerator.Voice
         public int Length { get; private set; }
         private long TotalBytes => Streams.Sum(s => s.BackingStream.Length);
         
-        public FrameVoiceTrack(string voiceName, int fps = 60, int volume = 80, int speed = 2)
+        public FrameVoiceTrack(string voiceName, int fps = 60, int volume = 100, int speed = 2)
         {
             var synth = new SpeechSynthesizer();
             bool hasVoice = false;

@@ -17,9 +17,11 @@
       <PackageReference Include="Emgu.CV" Version="4.9.0.5494" />
       <PackageReference Include="Emgu.CV.Bitmap" Version="4.9.0.5494" />
       <PackageReference Include="Emgu.CV.runtime.windows" Version="4.9.0.5494" />
+      <PackageReference Include="Google.Apis.YouTube.v3" Version="1.68.0.3421" />
       <PackageReference Include="MediaToolkit" Version="1.1.0.1" />
       <PackageReference Include="NAudio" Version="2.2.1" />
       <PackageReference Include="NAudio.Lame" Version="2.1.0" />
+      <PackageReference Include="Reddit" Version="1.5.2" />
       <PackageReference Include="System.Speech" Version="8.0.0" />
     </ItemGroup>
 
